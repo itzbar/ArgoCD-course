@@ -1,0 +1,4 @@
+apiVersion: v2
+name: mypod-chart
+description: A Helm chart for deploying mypod pod
+version: 0.1.0
