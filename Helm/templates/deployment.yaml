@@ -1,134 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rightv-rte-tln
-  namespace: tvaas-platform-services
-  generation: 7685
-  creationTimestamp: '2021-05-09T11:56:29Z'
-  labels:
-    k8slens-edit-resource-version: v1
-  annotations:
-    deployment.kubernetes.io/revision: '9'
-  selfLink: /apis/apps/v1/namespaces/tvaas-platform-services/deployments/rightv-rte-tln
-status:
-  observedGeneration: 7685
-  replicas: 2
-  updatedReplicas: 2
-  readyReplicas: 2
-  availableReplicas: 2
-  conditions:
-    - type: Progressing
-      status: 'True'
-      lastUpdateTime: '2023-12-12T12:39:06Z'
-      lastTransitionTime: '2021-05-09T11:56:29Z'
-      reason: NewReplicaSetAvailable
-      message: ReplicaSet "rightv-rte-tln-5556c6ccc" has successfully progressed.
-    - type: Available
-      status: 'True'
-      lastUpdateTime: '2024-03-14T00:06:27Z'
-      lastTransitionTime: '2024-03-14T00:06:27Z'
-      reason: MinimumReplicasAvailable
-      message: Deployment has minimum availability.
+  name: mypod-deployment
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: rightv-rte-tln
+      app: mypod
   template:
     metadata:
-      namespace: tvaas-platform-services
-      creationTimestamp: null
       labels:
-        app: rightv-rte-tln
+        app: mypod
     spec:
-      volumes:
-        - name: configuration
-          configMap:
-            name: rightv-rte-configuration-tln
-            defaultMode: 420
-        - name: plugins-efs
-          persistentVolumeClaim:
-            claimName: plugins-efs
-        - name: certificates-efs
-          persistentVolumeClaim:
-            claimName: certificates-efs
       containers:
-        - name: rightv-rte
-          image: >-
-            465902904216.dkr.ecr.eu-west-1.amazonaws.com/rightv-rte:rightv-rte-9.1.42-release
-          command:
-            - sh
-            - '-c'
-          args:
-            - "sed -i 's/ojdbc6/ojdbc8/g' /home/rightv/jboss/modules/com/orca/common/main/module.xml && /home/rightv/jboss/bin/run_rte-RIGHTV.sh\t        "
-          ports:
-            - containerPort: 8180
-              protocol: TCP
-          env:
-            - name: JAVA_OPTS
-              value: >-
-                -Xms1200m -Xmx2000m -Djava.net.preferIPv4Stack=true
-                -Drightv.root=$DIRNAME/../rte-RIGHTV
-                -Dcom.orca.plugins.dir=$DIRNAME/../rte-RIGHTV/plugins
-                -Djboss.modules.system.pkgs=$JBOSS_MODULES_SYSTEM_PKGS
-                -Djava.awt.headless=true -Djboss.modules.policy-permissions=true
-                -Daudit.config.file=$DIRNAME/../rte-RIGHTV/orca-config/audit-config.properties
-                $self_service
-          resources:
-            limits:
-              cpu: '1'
-              memory: 2236Mi
-            requests:
-              cpu: 500m
-              memory: 1200Mi
-          volumeMounts:
-            - name: configuration
-              mountPath: /home/rightv/jboss/rte-RIGHTV/configuration-map
-            - name: plugins-efs
-              mountPath: /home/rightv/jboss/rte-RIGHTV/plugins
-            - name: certificates-efs
-              mountPath: /home/rightv/certificates
-          livenessProbe:
-            httpGet:
-              path: /RTEFacade/IsAlive
-              port: 8180
-              scheme: HTTP
-            initialDelaySeconds: 10
-            timeoutSeconds: 25
-            periodSeconds: 30
-            successThreshold: 1
-            failureThreshold: 10
-          readinessProbe:
-            httpGet:
-              path: /RTEFacade/IsAlive
-              port: 8180
-              scheme: HTTP
-            initialDelaySeconds: 10
-            timeoutSeconds: 25
-            periodSeconds: 30
-            successThreshold: 1
-            failureThreshold: 10
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
-          imagePullPolicy: IfNotPresent
-      restartPolicy: Always
-      terminationGracePeriodSeconds: 30
-      dnsPolicy: ClusterFirst
-      securityContext: {}
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                labelSelector:
-                  matchLabels:
-                    app: rightv-rte-tln
-                topologyKey: kubernetes.io/hostname
-      schedulerName: default-scheduler
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 25%
-      maxSurge: 25%
-  revisionHistoryLimit: 10
-  progressDeadlineSeconds: 600
+        - name: mycontainer
+          image: nginx
